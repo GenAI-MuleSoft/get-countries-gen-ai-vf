@@ -139,9 +139,14 @@ output application/json
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 fun findCountry(countries, searchString:String) = countries filter ((item, index) -> lower(item.name.common) contains(lower(searchString)) )
-fun filterByPopulation(countries, population) = countries filter ((country, index) -> lower(country.population)<population*1000000  )
+fun filterByPopulation(countries, population) = countries filter ((country, index) -> lower(country.population)<population*1000000)
+fun orderCountriesByName(countries, sortOrder)=
+if (sortOrder =="ascend")
+    (countries orderBy $.name.common  )
+    else 
+    (countries orderBy $.name.common  )[-1 to 0]
 ---
-filterByPopulation(payload, vars.population)]]></ee:set-payload>
+orderCountriesByName(payload, vars.sort_type)]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="f1f1f280-6cb8-4180-a528-ee11efe9196c" message="End of the flow"/>
