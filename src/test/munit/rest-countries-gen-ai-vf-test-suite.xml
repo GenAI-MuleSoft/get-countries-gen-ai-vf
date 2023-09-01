@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="rest-countries-gen-ai-vf-test-suite.xml" />
+	<munit:test name="rest-countries-gen-ai-vf-test-suite-get:\countries:rest-countries-gen-ai-vf-configTest" doc:id="3b14936e-257e-4f25-b75b-4046cbdbb3c9" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b2ab19e6-d84f-40df-8ae9-f811cf0cb915" >
+				<munit:attributes value='#[ { "queryParams": {"country_name": "Col"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\countries:rest-countries-gen-ai-vf-config" doc:id="f52327e7-e9d9-4fe5-9408-ad1c46069527" name="get:\countries:rest-countries-gen-ai-vf-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="585f7656-951d-4a0d-b170-1f649ebc852e" expression="#[sizeOf(payload)]" is="#[MunitTools::greaterThan(0)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Test_with_negative_limit_and_offset" doc:id="b901fd33-8db8-4ce1-a9fc-73257246c505" description="Test">
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="222e19fd-7f87-4243-a7ae-27335cf03448">
+				<munit:attributes value='#[ { "queryParams": {"limit": -1,"offset": -1}}]' />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref to get:\countries:rest-countries-gen-ai-vf-config" doc:id="cfacf7fd-acee-4f77-8bff-a9dcc446e177" name="get:\countries:rest-countries-gen-ai-vf-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that" doc:id="e0284811-dd53-47dd-aa75-6334cfb1f0a3" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(0)]" />
+			</munit:validation>
+		</munit:test>
+	<munit:test name="Test_with_Valid_Limit_and_offset" doc:id="94a21969-d3e8-4092-8781-89c4e8d7fddd" description="Test">
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="0bff7084-b5f7-48a9-98c2-2d8f2caeb8a0">
+				<munit:attributes value='#[ { "queryParams": {"limit": 5,"offset": 2}}]' />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref to get:\countries:rest-countries-gen-ai-vf-config" doc:id="9d0e6d8a-d242-419f-afcf-150c12fc4262" name="get:\countries:rest-countries-gen-ai-vf-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that" doc:id="3ad90b2f-e6c4-406c-9257-6ec9b947fef6" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(5)]" />
+			</munit:validation>
+		</munit:test>
+	<munit:test name="Test_For_Country_Name_And_Population" doc:id="2d45304f-f9c8-40a8-99b2-8ab36339032e" description="Test">
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="bab9e61a-6ca2-4d98-9bfb-fe4212f57eba">
+				<munit:attributes value='#[ { "queryParams": {"country_name": "Colombia","population": 150}}]' />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref to get:\countries:rest-countries-gen-ai-vf-config" doc:id="94dad153-c42b-4b36-b9ec-3e84cf719c1b" name="get:\countries:rest-countries-gen-ai-vf-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that" doc:id="3144a0c2-fb4c-4e28-80e8-16321c2f7ee4" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(1)]" />
+			</munit:validation>
+		</munit:test>
+	<munit:test name="Test_For_Country_Name_Sort_Type_And_Population" doc:id="294da130-7912-4022-8e59-2a1bd7cebf80" description="Test">
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="f5f0fe8b-6a0c-45bb-92fb-8bda05fabbca">
+				<munit:attributes value='#[ { "queryParams": {"country_name": "ma","population": 2,"sort_type": "descend"}}]' />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref to get:\countries:rest-countries-gen-ai-vf-config" doc:id="1f766147-e879-4783-b6d1-ed48d120d118" name="get:\countries:rest-countries-gen-ai-vf-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that" doc:id="6d8fe731-3b3b-46fb-a7d8-cf9a237858a0" expression="#[sizeOf(payload)]" is="#[MunitTools::greaterThan(0)]" />
+			</munit:validation>
+		</munit:test>
+
+</mule>
