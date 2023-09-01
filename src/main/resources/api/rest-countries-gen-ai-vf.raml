@@ -1,0 +1,31 @@
+#%RAML 1.0
+title: rest-countries-gen-ai-vf
+
+/countries:
+  get:
+    queryParameters: 
+      country_name:
+        description: Coutry name query paramether for searching countries
+        type: string
+        required: false
+      population:
+        description: Max population in millions of people. Endpoint will return countries that have less people
+        type: integer
+        required: false
+      sort_type:
+        description: Sort type by country name. Accept only ascend or descend value
+        type: string
+        enum: [ascend , descend ]
+        required: false
+      limit:
+        description: Limit of records than can be displayed in responce
+        type: integer
+        required: false
+      offset:
+        description: Number of page
+        type: integer
+        required: false
+    responses:
+        200:
+          body:
+            application/json:
