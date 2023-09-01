@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="countries-implementationSub_Flow" doc:id="c9265b40-9141-4d68-b825-c2e485e15ffc" >
+		<set-variable value="#[attributes.queryParams.sort_type]" doc:name="Set sortType Variable" doc:id="cf3346f1-9a22-400f-9c34-656e723e5538" variableName="sortType" />
+		<set-variable value="#[attributes.queryParams.country_name]" doc:name="Set countryName Variable" doc:id="2fb20142-3fd7-416a-bebe-a5faa2099883" variableName="countryName" />
+		<set-variable value="#[attributes.queryParams.limit]" doc:name="Set limit Variable" doc:id="64437667-e85f-41c6-b8db-3691840b0ffe" variableName="limit" />
+		<set-variable value="#[attributes.queryParams.population]" doc:name="Set population Variable" doc:id="85ee4a92-c3fe-4ef2-800b-43b82ab87cc5" variableName="population" />
+		<set-variable value="#[attributes.queryParams.offset]" doc:name="Set offset Variable" doc:id="ba7729ee-083b-435f-9aef-8ea00ad94529" variableName="offset" />
+		<http:request method="GET" doc:name="Call countries api" doc:id="de3c0aeb-7a7c-4387-acc9-3c139aa1db9a" config-ref="HTTP_Request_configuration" url="https://restcountries.com/v3.1/all" />
+		<ee:transform doc:name="Final filtering" doc:id="f10a1f07-04fd-44aa-83cc-a805afec121a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun findCountry(countries, searchString) = 
+if(searchString != null)
+(countries filter ((item, index) -> lower(item.name.common) contains(lower(searchString)) ))
+else
+countries
+fun filterByPopulation(countries, population) =
+if(population != null)
+(countries filter ((country, index) -> lower(country.population)<population*1000000))  
+else 
+countries
+fun orderCountriesByName(countries, sortOrder)=
+if (sortOrder =="ascend")
+    (countries orderBy $.name.common  )
+    else if(sortOrder =="descend")   
+    (countries orderBy $.name.common  )[-1 to 0]
+    else
+    countries
+    
+fun getPage(countries, limit, offset)= 
+if (limit != null and offset !=null)
+countries filter ((item, index) -> index>((offset-1)*limit)-1 and index<limit*offset)
+else
+countries
+---
+
+getPage(orderCountriesByName(filterByPopulation(findCountry(payload,vars.countryName),vars.population),vars.sortType),vars.limit,vars.offset)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
