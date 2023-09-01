@@ -128,19 +128,20 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\countries:rest-countries-gen-ai-vf-config">
-        <set-variable value="#[attributes.queryParams.country_name]" doc:name="Set Variable" doc:id="b0990095-7425-4391-b59a-2076e90af813" variableName="countryName"/>
-		<set-variable value="#[attributes.queryParams.sort_type]" doc:name="Set Variable" doc:id="bc4f2caf-c3ec-4950-a50b-389a1ce7fdd5" variableName="sortType"/>
-		<set-variable value="#[attributes.queryParams.population]" doc:name="Set Variable" doc:id="0aaa5580-8e0b-4b04-81f4-a2c599b7c54e" variableName="population"/>
-		<set-variable value="#[attributes.queryParams.limit]" doc:name="Set Variable" doc:id="e5c6f84c-36f5-4be5-8dfc-81b7a07de50d" variableName="limit"/>
-		<set-variable value="#[attributes.queryParams.offset]" doc:name="Set Variable" doc:id="dd8aecc6-d390-4a36-9b5a-56592980d0bf" variableName="offset"/>
+        <set-variable value="#[attributes.queryParams.country_name]" doc:name="Set countryName Variable" doc:id="b0990095-7425-4391-b59a-2076e90af813" variableName="countryName"/>
+		<set-variable value="#[attributes.queryParams.sort_type]" doc:name="Set sortType Variable" doc:id="bc4f2caf-c3ec-4950-a50b-389a1ce7fdd5" variableName="sortType"/>
+		<set-variable value="#[attributes.queryParams.population]" doc:name="Set population Variable" doc:id="0aaa5580-8e0b-4b04-81f4-a2c599b7c54e" variableName="population"/>
+		<set-variable value="#[attributes.queryParams.limit]" doc:name="Set limit Variable" doc:id="e5c6f84c-36f5-4be5-8dfc-81b7a07de50d" variableName="limit"/>
+		<set-variable value="#[attributes.queryParams.offset]" doc:name="Set offset Variable" doc:id="dd8aecc6-d390-4a36-9b5a-56592980d0bf" variableName="offset"/>
 		<http:request method="GET" doc:name="Call countries api" doc:id="1aa7e431-51ce-4a88-8304-679b71b62d07" config-ref="HTTP_Request_configuration" url="https://restcountries.com/v3.1/all"/>
 		<ee:transform doc:name="Transform to JSON" doc:id="bad2d018-229e-41ae-8f96-b3798ece257d" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-fun findCountry(countries, searchString) = countries filter ((item, index) -> lower(item.name.common) contains(lower(searchString)) )
+fun findCountry(countries, searchString:String) = countries filter ((item, index) -> lower(item.name.common) contains(lower(searchString)) )
+fun filterByPopulation(countries, population) = countries filter ((country, index) -> lower(country.population)<population*1000000  )
 ---
-findCountry(payload, vars.countryName)]]></ee:set-payload>
+filterByPopulation(payload, vars.population)]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="f1f1f280-6cb8-4180-a528-ee11efe9196c" message="End of the flow"/>
